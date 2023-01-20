@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+const crypto = require('crypto');
 
 var app = express();
 var port = 3525;
@@ -14,7 +15,25 @@ app.get('/', function(req, res){
 	});
 });
 app.post('/', function(req, res){
-    console.log( req.body)
+	
+    
+    // A sample webhook coming from MetaMap
+    const WEBHOOK_PAYLOAD = req.body;
+    const MERCHANT_SECRET = '3NG8oytbvsC55nP6bQsVOT5C1';
+    
+    // MetaMap hashes your webhook payload
+    const signature = crypto.createHmac('sha256', MERCHANT_SECRET).update(JSON.stringify(WEBHOOK_PAYLOAD)).digest('hex');
+    console.log(signature);
+    
+    function verify(signature, secret, payloadBody) {
+        let hash = crypto.createHmac('sha256', secret);
+        hash = hash.update(payloadBody).digest('hex');
+        return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(signature));
+    }    
+    let isValidPayload;
+    
+    isValidPayload = verify(signature, MERCHANT_SECRET, JSON.stringify(WEBHOOK_PAYLOAD));
+    console.log(isValidPayload);
 	res.status(200).send({
 		message: 'POST Home route working fine!'
 	});
