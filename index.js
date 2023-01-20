@@ -16,7 +16,7 @@ app.get('/', function(req, res){
 });
 app.post('/', function(req, res){
 	
-    
+    console.log(req.body)
     // A sample webhook coming from MetaMap
     const WEBHOOK_PAYLOAD = req.body;
     const MERCHANT_SECRET = '3NG8oytbvsC55nP6bQsVOT5C1';
